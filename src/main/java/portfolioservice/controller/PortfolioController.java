@@ -1,18 +1,19 @@
 package portfolioservice.controller;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import portfolioservice.dto.Response;
 import portfolioservice.service.PortfolioService;
 
-public class PortfolioController implements HttpHandler {
+import java.io.IOException;
+
+public class PortfolioController {
     private final PortfolioService portfolioService;
 
     public PortfolioController(PortfolioService portfolioService) {
         this.portfolioService = portfolioService;
     }
 
-    @Override
-    public void handle(HttpExchange exchange) {
-
+    public Response createPortfolio(HttpExchange exchange) throws IOException {
+        return Response.ok(portfolioService);
     }
 }
