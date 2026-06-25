@@ -11,11 +11,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
-public class PortfolioHttpServer {
-    private int port;
+public class HttpServer {
+    private final int port;
+    private final RouteRegistry routeRegistry;
 
-    public PortfolioHttpServer(int port) {
+    public HttpServer(int port) {
         this.port = port;
+        RouteRegistryBuilder routeRegistryBuilder = new RouteRegistryBuilder();
+        this.routeRegistry = routeRegistryBuilder.build();
     }
 
     public void run() throws Exception {
@@ -34,7 +37,7 @@ public class PortfolioHttpServer {
 
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(1024 * 1024));
-                            pipeline.addLast(new PortfolioHttpRequestHandler());
+                            pipeline.addLast(new HttpRequestHandler(routeRegistry));
                         }
                     });
 

@@ -1,7 +1,9 @@
 package portfolioservice;
 
 
-import portfolioservice.server.http.PortfolioHttpServer;
+import portfolioservice.server.http.HttpServer;
+import portfolioservice.server.http.RouteRegistry;
+import portfolioservice.server.http.RouteRegistryBuilder;
 import portfolioservice.server.tcp.PortfolioTcpServer;
 
 public class PortfolioServiceApp {
@@ -21,7 +23,7 @@ public class PortfolioServiceApp {
 
         Thread httpThread = new Thread(() -> {
             try {
-                PortfolioHttpServer httpServer = new PortfolioHttpServer(portHttp);
+                HttpServer httpServer = new HttpServer(portHttp);
                 httpServer.run();
             } catch (Exception e) {
                 e.printStackTrace();

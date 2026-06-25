@@ -4,28 +4,42 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import lombok.AllArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 
-public class PortfolioHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    private final HttpRouter router;
+    private final RouteRegistry routeRegistry;
+
+    public HttpRequestHandler(RouteRegistry routeRegistry) {
+        this.routeRegistry = routeRegistry;
+        router = new HttpRouter(routeRegistry);
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, FullHttpRequest request) {
-        String method = request.method().name();
         String uri = request.uri();
         String body = request.content().toString(StandardCharsets.UTF_8);
 
-        System.out.println("HTTP " + method + " " + uri);
-        System.out.println("Body: " + body);
+        System.out.println("HTTP " + request.method().name() + " " + uri);
 
-        if (request.method().equals(HttpMethod.GET) && uri.equals("/ping")) {
-            sendJson(context, HttpResponseStatus.OK, "{\"status\":\"OK\",\"type\":\"PONG\"}");
-            return;
-        }
+        AppHttpResponse appResponse = router.route(
+                request.method(),
+                uri,
+                body
+        );
 
-        sendJson(context, HttpResponseStatus.NOT_FOUND, "{\"status\":\"ERROR\",\"message\":\"Not found\"}");
+        // TODO json should be in another class
+        sendJson(
+                context,
+                appResponse.getStatus(),
+                appResponse.getBody()
+        );
     }
 
+    // TODO json should be in another class
     private void sendJson(ChannelHandlerContext context, HttpResponseStatus status, String json) {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 

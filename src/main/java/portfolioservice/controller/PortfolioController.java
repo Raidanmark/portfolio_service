@@ -1,19 +1,45 @@
 package portfolioservice.controller;
 
-import com.sun.net.httpserver.HttpExchange;
-import portfolioservice.dto.Response;
+import lombok.AllArgsConstructor;
+import portfolioservice.server.http.AppHttpResponse;
+import portfolioservice.server.http.ControllerRouteRegistry;
+import portfolioservice.server.http.HttpController;
+import portfolioservice.server.http.HttpRequestData;
 import portfolioservice.service.PortfolioService;
 
-import java.io.IOException;
-
-public class PortfolioController {
+@AllArgsConstructor
+public class PortfolioController implements HttpController {
     private final PortfolioService portfolioService;
 
-    public PortfolioController(PortfolioService portfolioService) {
-        this.portfolioService = portfolioService;
+    @Override
+    public String basePath() {
+        return "/portfolios";
     }
 
-    public Response createPortfolio(HttpExchange exchange) throws IOException {
-        return Response.ok(portfolioService);
+    @Override
+    public void registerRoutes(ControllerRouteRegistry routes) {
+        routes.post("/", this::createPortfolio);
+        routes.get("/{portfolioId}/summary", this::getSummary);
+        routes.get("/{portfolioId}/history", this::getHistory);
+    }
+
+    public AppHttpResponse createPortfolio(HttpRequestData request) {
+        return AppHttpResponse.ok("{\"status\":\"OK\",\"type\":\"PORTFOLIO_CREATED\"}");
+    }
+
+    public AppHttpResponse getSummary(HttpRequestData request) {
+        String portfolioId = request.pathVariable("portfolioId");
+
+        return AppHttpResponse.ok(
+                "{\"status\":\"OK\",\"type\":\"SUMMARY\",\"portfolioId\":" + portfolioId + "}"
+        );
+    }
+
+    public AppHttpResponse getHistory(HttpRequestData request) {
+        String portfolioId = request.pathVariable("portfolioId");
+
+        return AppHttpResponse.ok(
+                "{\"status\":\"OK\",\"type\":\"HISTORY\",\"portfolioId\":" + portfolioId + "}"
+        );
     }
 }
