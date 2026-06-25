@@ -1,7 +1,5 @@
 package portfolioservice.server.http;
 
-import io.netty.handler.codec.http.HttpMethod;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,22 +17,22 @@ public  class RouteRegistryBuilder {
     }
 
     public void get(String path, RouteHandler handler) {
-        register(HttpMethod.GET, path, handler);
+        register(PortfolioHttpMethod.GET, path, handler);
     }
 
     public void post(String path, RouteHandler handler) {
-        register(HttpMethod.POST, path, handler);
+        register(PortfolioHttpMethod.POST, path, handler);
     }
 
     public void put(String path, RouteHandler handler) {
-        register(HttpMethod.PUT, path, handler);
+        register(PortfolioHttpMethod.PUT, path, handler);
     }
 
     public void delete(String path, RouteHandler handler) {
-        register(HttpMethod.DELETE, path, handler);
+        register(PortfolioHttpMethod.DELETE, path, handler);
     }
 
-    private void register(HttpMethod method, String path, RouteHandler handler) {
+    private void register(PortfolioHttpMethod method, String path, RouteHandler handler) {
         RouteKey routeKey = new RouteKey(method, path);
 
         if (path.contains("{")) {

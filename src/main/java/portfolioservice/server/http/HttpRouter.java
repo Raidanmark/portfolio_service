@@ -1,72 +1,51 @@
 package portfolioservice.server.http;
 
-import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.AllArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@AllArgsConstructor
 public class HttpRouter {
     private final RouteRegistry routeRegistry;
 
-    public HttpRouter(RouteRegistry routeRegistry) {
-        this.routeRegistry = routeRegistry;
-    }
 
-    public AppHttpResponse route(HttpMethod method, String uri, String body) {
-        String path = normalizePath(uri);
+    public HttpResponse route(HttpRequest request) {
 
-        RouteHandler staticHandler = routeRegistry.getStaticRoutes().get(new RouteKey(method, path));;
 
-        if (staticHandler != null) {
-            HttpRequestData request = new HttpRequestData(
-                    method,
-                    path,
-                    body,
-                    Map.of()
-            );
+        RouteHandler staticHandler = routeRegistry.getStaticRoutes().
+                get(new RouteKey(request.getMethod(), request.getPath()));
 
+
+        if (isStaticRoute(request.getMethod(), request.getPath())) {
             return staticHandler.handle(request);
         }
 
         for (Map.Entry<RouteKey, RouteHandler> entry : routeRegistry.getDynamicRoutes().entrySet()) {
             RouteKey routeKey = entry.getKey();
 
-            if (!routeKey.getMethod().equals(method)) {
+            if (!routeKey.getMethod().equals(request.getMethod())) {
                 continue;
             }
 
-            Map<String, String> pathVariables = matchDynamicPath(routeKey.getPath(), path);
+            Map<String, String> pathVariables = matchDynamicPath(routeKey.getPath(), request.getPath());
+            request.setPathVariables(pathVariables);
 
-            if (pathVariables != null) {
-                HttpRequestData request = new HttpRequestData(
-                        method,
-                        path,
-                        body,
-                        pathVariables
-                );
-
-                return entry.getValue().handle(request);
-            }
+            return entry.getValue().handle(request);
         }
-// TODO make exception for this
-        // TODO too much static data
-        return AppHttpResponse.error(
+
+        // TODO make exception for this
+        return HttpResponse.error(
                 HttpResponseStatus.NOT_FOUND,
                 "{\"status\":\"ERROR\",\"code\":\"NOT_FOUND\",\"message\":\"Route not found\"}"
         );
     }
-//TODO registration should be implemented in another way. Every controller should register path from its class and have to create mech for this
 
-    private String normalizePath(String uri) {
-        int queryIndex = uri.indexOf('?');
-
-        if (queryIndex >= 0) {
-            return uri.substring(0, queryIndex);
-        }
-
-        return uri;
+    private boolean isStaticRoute(PortfolioHttpMethod method, String path) {
+        return routeRegistry.getStaticRoutes().containsKey(new RouteKey(method, path));
     }
+
 //TODO maybe I can find some lib for this
     private Map<String, String> matchDynamicPath(String routePattern, String actualPath) {
         String[] routeParts = routePattern.split("/");

@@ -4,9 +4,10 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import lombok.AllArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
@@ -20,18 +21,14 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, FullHttpRequest request) {
-        String uri = request.uri();
-        String body = request.content().toString(StandardCharsets.UTF_8);
 
-        System.out.println("HTTP " + request.method().name() + " " + uri);
+        HttpRequest httpRequest = createHttpRequest(request);
 
-        AppHttpResponse appResponse = router.route(
-                request.method(),
-                uri,
-                body
-        );
 
-        // TODO json should be in another class
+        System.out.println("HTTP " + request.method().name() + " " + request.uri());
+
+        HttpResponse appResponse = router.route(httpRequest);
+
         sendJson(
                 context,
                 appResponse.getStatus(),
@@ -53,5 +50,41 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         response.headers().set(HttpHeaderNames.CONTENT_LENGTH, bytes.length);
 
         context.writeAndFlush(response);
+    }
+
+    private HttpRequest createHttpRequest(FullHttpRequest fullRequest) {
+        QueryStringDecoder decoder = new QueryStringDecoder(fullRequest.uri());
+        String path = decoder.path();
+
+        return new HttpRequest(
+                PortfolioHttpMethod.fromNetty(fullRequest.method()),
+                path,
+                fullRequest.content().toString(StandardCharsets.UTF_8),
+                extractHeaders(fullRequest),
+                extractQueryParams(fullRequest),
+                Map.of()  // pathVariables
+        );
+    }
+    // TODO move this to another class
+    private Map<String, String> extractHeaders(FullHttpRequest request) {
+        Map<String, String> headers = new HashMap<>();
+
+        request.headers().forEach(entry ->
+                headers.put(entry.getKey(), entry.getValue())
+        );
+
+        return headers;
+    }
+    private Map<String, String> extractQueryParams(FullHttpRequest request) {
+        Map<String, String> queryParams = new HashMap<>();
+        QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
+
+        decoder.parameters().forEach((key, values) -> {
+            if (!values.isEmpty()) {
+                queryParams.put(key, values.get(0));
+            }
+        });
+
+        return queryParams;
     }
 }

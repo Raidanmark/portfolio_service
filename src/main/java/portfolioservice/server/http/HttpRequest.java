@@ -8,13 +8,16 @@ import lombok.Setter;
 import java.util.Map;
 
 @Getter
+@Setter
 @AllArgsConstructor
-public class HttpRequestData {
+public class HttpRequest {
 
-    private final HttpMethod method;
+    private final PortfolioHttpMethod method;
     private final String path;
     private final String body;
-    private final Map<String,String> pathVariables;
+    private final Map<String,String> headers;
+    private final Map<String,String> queryParams;
+    private  Map<String,String> pathVariables;
 
     public String pathVariable(String name) {
         return pathVariables.get(name);

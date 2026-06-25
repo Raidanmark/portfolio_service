@@ -1,10 +1,10 @@
 package portfolioservice.controller;
 
 import lombok.AllArgsConstructor;
-import portfolioservice.server.http.AppHttpResponse;
+import portfolioservice.server.http.HttpResponse;
 import portfolioservice.server.http.ControllerRouteRegistry;
 import portfolioservice.server.http.HttpController;
-import portfolioservice.server.http.HttpRequestData;
+import portfolioservice.server.http.HttpRequest;
 import portfolioservice.service.PortfolioService;
 
 @AllArgsConstructor
@@ -23,22 +23,22 @@ public class PortfolioController implements HttpController {
         routes.get("/{portfolioId}/history", this::getHistory);
     }
 
-    public AppHttpResponse createPortfolio(HttpRequestData request) {
-        return AppHttpResponse.ok("{\"status\":\"OK\",\"type\":\"PORTFOLIO_CREATED\"}");
+    public HttpResponse createPortfolio(HttpRequest request) {
+        return HttpResponse.ok("{\"status\":\"OK\",\"type\":\"PORTFOLIO_CREATED\"}");
     }
 
-    public AppHttpResponse getSummary(HttpRequestData request) {
+    public HttpResponse getSummary(HttpRequest request) {
         String portfolioId = request.pathVariable("portfolioId");
 
-        return AppHttpResponse.ok(
+        return HttpResponse.ok(
                 "{\"status\":\"OK\",\"type\":\"SUMMARY\",\"portfolioId\":" + portfolioId + "}"
         );
     }
 
-    public AppHttpResponse getHistory(HttpRequestData request) {
+    public HttpResponse getHistory(HttpRequest request) {
         String portfolioId = request.pathVariable("portfolioId");
 
-        return AppHttpResponse.ok(
+        return HttpResponse.ok(
                 "{\"status\":\"OK\",\"type\":\"HISTORY\",\"portfolioId\":" + portfolioId + "}"
         );
     }
