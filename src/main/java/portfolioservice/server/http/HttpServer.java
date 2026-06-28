@@ -10,15 +10,16 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import portfolioservice.server.http.route.RouteRegistry;
+import portfolioservice.server.http.route.RouteRegistryBuilder;
 
 public class HttpServer {
     private final int port;
     private final RouteRegistry routeRegistry;
 
-    public HttpServer(int port) {
+    public HttpServer(int port, RouteRegistry routeRegistry) {
         this.port = port;
-        RouteRegistryBuilder routeRegistryBuilder = new RouteRegistryBuilder();
-        this.routeRegistry = routeRegistryBuilder.build();
+        this.routeRegistry = routeRegistry;
     }
 
     public void run() throws Exception {

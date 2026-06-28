@@ -1,7 +1,7 @@
-package portfolioservice.server.http;
+package portfolioservice.server.http.route;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import portfolioservice.server.http.RouteHandler;
 
 import java.util.Map;
 

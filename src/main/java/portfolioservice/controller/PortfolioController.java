@@ -1,15 +1,11 @@
 package portfolioservice.controller;
 
-import lombok.AllArgsConstructor;
 import portfolioservice.server.http.HttpResponse;
-import portfolioservice.server.http.ControllerRouteRegistry;
+import portfolioservice.server.http.route.ControllerRouteRegistry;
 import portfolioservice.server.http.HttpController;
 import portfolioservice.server.http.HttpRequest;
-import portfolioservice.service.PortfolioService;
 
-@AllArgsConstructor
 public class PortfolioController implements HttpController {
-    private final PortfolioService portfolioService;
 
     @Override
     public String basePath() {

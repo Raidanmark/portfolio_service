@@ -1,4 +1,6 @@
-package portfolioservice.server.http;
+package portfolioservice.server.http.route;
+
+import portfolioservice.server.http.RouteHandler;
 
 public class ControllerRouteRegistry {
     private final String basePath;

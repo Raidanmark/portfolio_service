@@ -2,6 +2,9 @@ package portfolioservice.server.http;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.AllArgsConstructor;
+import portfolioservice.server.http.route.PortfolioHttpMethod;
+import portfolioservice.server.http.route.RouteKey;
+import portfolioservice.server.http.route.RouteRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +34,10 @@ public class HttpRouter {
 
             Map<String, String> pathVariables = matchDynamicPath(routeKey.getPath(), request.getPath());
             request.setPathVariables(pathVariables);
+
+            if (pathVariables == null) {
+                continue;
+            }
 
             return entry.getValue().handle(request);
         }

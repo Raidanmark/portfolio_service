@@ -1,9 +1,9 @@
 package portfolioservice.server.http;
 
-import io.netty.handler.codec.http.HttpMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import portfolioservice.server.http.route.PortfolioHttpMethod;
 
 import java.util.Map;
 

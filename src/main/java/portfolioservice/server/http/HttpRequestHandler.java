@@ -4,29 +4,29 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import lombok.extern.slf4j.Slf4j;
+import portfolioservice.server.http.route.PortfolioHttpMethod;
+import portfolioservice.server.http.route.RouteRegistry;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private final HttpRouter router;
-    private final RouteRegistry routeRegistry;
 
     public HttpRequestHandler(RouteRegistry routeRegistry) {
-        this.routeRegistry = routeRegistry;
         router = new HttpRouter(routeRegistry);
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, FullHttpRequest request) {
-
+        log.info("HTTP {} {}", request.method().name(), request.uri());
         HttpRequest httpRequest = createHttpRequest(request);
 
-
-        System.out.println("HTTP " + request.method().name() + " " + request.uri());
-
+        log.info("Request routing started");
         HttpResponse appResponse = router.route(httpRequest);
 
         sendJson(

@@ -1,4 +1,4 @@
-package portfolioservice.server.http;
+package portfolioservice.server.http.route;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
