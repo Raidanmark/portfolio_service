@@ -2,7 +2,11 @@ package portfolioservice.config;
 
 import lombok.extern.slf4j.Slf4j;
 import portfolioservice.controller.PortfolioController;
+import portfolioservice.database.DatabaseConnectionProvider;
 import portfolioservice.di.DiContainer;
+import portfolioservice.mapper.JsonMapper;
+import portfolioservice.mapper.PortfolioMapper;
+import portfolioservice.repository.PortfolioRepository;
 import portfolioservice.server.http.HttpServer;
 import portfolioservice.server.http.route.RouteRegistry;
 import portfolioservice.server.http.route.RouteRegistryBuilder;
@@ -33,6 +37,10 @@ public class AppConfig {
     private void registerBeans(DiContainer container) {
         container.register(PortfolioService.class);
         container.register(PortfolioController.class);
+        container.register(PortfolioRepository.class);
+        container.register(DatabaseConnectionProvider.class);
+        container.register(PortfolioMapper.class);
+        container.register(JsonMapper.class);
         log.info("Beans registered");
     }
 

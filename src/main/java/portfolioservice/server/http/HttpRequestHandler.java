@@ -24,9 +24,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     @Override
     protected void channelRead0(ChannelHandlerContext context, FullHttpRequest request) {
         log.info("HTTP {} {}", request.method().name(), request.uri());
+        log.info("Request handling started");
         HttpRequest httpRequest = createHttpRequest(request);
+        log.info("Request object created");
 
-        log.info("Request routing started");
         HttpResponse appResponse = router.route(httpRequest);
 
         sendJson(

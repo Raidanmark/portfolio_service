@@ -2,6 +2,7 @@ package portfolioservice.server.http;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import portfolioservice.server.http.route.PortfolioHttpMethod;
 import portfolioservice.server.http.route.RouteKey;
 import portfolioservice.server.http.route.RouteRegistry;
@@ -9,6 +10,7 @@ import portfolioservice.server.http.route.RouteRegistry;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @AllArgsConstructor
 public class HttpRouter {
     private final RouteRegistry routeRegistry;
@@ -16,15 +18,17 @@ public class HttpRouter {
 
     public HttpResponse route(HttpRequest request) {
 
-
+        log.info("Request routing started for {} {}", request.getMethod(), request.getPath());
         RouteHandler staticHandler = routeRegistry.getStaticRoutes().
                 get(new RouteKey(request.getMethod(), request.getPath()));
 
-
+        log.info("Checking if static route exists for {} {}", request.getMethod(), request.getPath());
         if (isStaticRoute(request.getMethod(), request.getPath())) {
+            log.info("Static route found for {} {}", request.getMethod(), request.getPath());
             return staticHandler.handle(request);
         }
 
+        log.info("No static route found for {} {}, checking dynamic routes", request.getMethod(), request.getPath());
         for (Map.Entry<RouteKey, RouteHandler> entry : routeRegistry.getDynamicRoutes().entrySet()) {
             RouteKey routeKey = entry.getKey();
 
@@ -39,9 +43,11 @@ public class HttpRouter {
                 continue;
             }
 
+            log.info("Dynamic route found for {} {}", request.getMethod(), request.getPath());
             return entry.getValue().handle(request);
         }
 
+        log.info("No route found for {} {}", request.getMethod(), request.getPath());
         // TODO make exception for this
         return HttpResponse.error(
                 HttpResponseStatus.NOT_FOUND,
