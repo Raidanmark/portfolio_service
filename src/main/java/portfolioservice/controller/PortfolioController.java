@@ -2,6 +2,7 @@ package portfolioservice.controller;
 
 import lombok.AllArgsConstructor;
 import portfolioservice.dto.portfolio.PortfolioCreateDto;
+import portfolioservice.dto.portfolio.PortfolioDto;
 import portfolioservice.mapper.PortfolioMapper;
 import portfolioservice.server.http.HttpResponse;
 import portfolioservice.server.http.route.ControllerRouteRegistry;
@@ -27,11 +28,11 @@ public class PortfolioController implements HttpController {
         routes.get("/{portfolioId}/history", this::getHistory);
     }
 
-    public HttpResponse createPortfolio(HttpRequest request) {
+    public PortfolioDto createPortfolio(HttpRequest request) {
         PortfolioCreateDto createDto = portfolioMapper.toCreateDto(request);
         //TODO : Implement validation for the PortfolioCreateDto
-        portfolioService.createPortfolio(createDto);
-        return HttpResponse.ok("{\"status\":\"OK\",\"type\":\"PORTFOLIO_CREATED\"}");
+
+        return portfolioService.createPortfolio(createDto);
     }
 
     public HttpResponse getSummary(HttpRequest request) {

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import portfolioservice.dto.portfolio.PortfolioCreateDto;
 import portfolioservice.dto.portfolio.PortfolioDto;
 import portfolioservice.entity.Portfolio;
-import portfolioservice.repository.PortfolioRepository;
 import portfolioservice.server.http.HttpRequest;
 
 import java.util.Currency;
@@ -31,9 +30,19 @@ public class PortfolioMapper {
         );
     }
 
-//    public PortfolioDto toDto() {
-//        // Implementation for mapping Portfolio entity to PortfolioDto
-//    }
+    public PortfolioDto toPortfolioDto(Portfolio portfolio) {
+        log.info("Mapping Portfolio entity to PortfolioDto started");
+        String baseCurrency = portfolio.getCurrency() == null
+                ? null
+                : portfolio.getCurrency().getCurrencyCode();
+
+        return new PortfolioDto(
+                portfolio.getId(),
+                portfolio.getName(),
+                baseCurrency,
+                portfolio.getCreatedAt()
+        );
+    }
 
     private Currency toCurrency(String currencyCode) {
         if (currencyCode == null || currencyCode.isBlank()) {
